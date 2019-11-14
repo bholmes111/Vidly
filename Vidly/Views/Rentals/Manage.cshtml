@@ -1,0 +1,93 @@
+﻿@model IEnumerable<Vidly.Models.Rental>
+@{
+    ViewBag.Title = "Manage Rentals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@{
+    var thisCustomer = Model.FirstOrDefault().Customer.Name;
+}
+<br />
+<br />
+<h2>Manage Rentals for @thisCustomer</h2>
+<table id="rentals" class="table table-bordered table-hover">
+    <thead>
+        <tr>
+            <th>Movie</th>
+            <th>DateRented</th>
+            <th>DateReturned</th>
+            <th>Return</th>
+        </tr>
+    </thead>
+    <tbody>
+        @*@foreach (var rental in Model)
+        {
+            <tr>
+                <td>@rental.Movie.Name</td>
+                <td>@rental.DateRented</td>
+                <td>@rental.DateReturned</td>
+                @if (@rental.DateReturned != null)
+                {
+                    <td></td>
+                }
+                else
+                {
+                    <td>
+                        <button data-rental-id="@rental.Id" class="btn btn-link js-return">Return</button>
+                    </td>
+                }
+
+            </tr>
+        }*@
+    </tbody>
+</table>
+@section scripts
+{
+    <script>
+        $(document).ready(function () {
+            var columns = [
+                {
+                    data: "movie.name"
+                }
+                , {
+                    data: "dateRented"
+                }
+                , {
+                    data: "dateReturned"
+                }
+            ];
+
+            columns.push({
+                data: "id",
+                render: function (data) {
+                    return "<button class='btn btn-link js-return' data-rental-id=" + data + ">Return Rental</button>";
+                }
+            });
+
+            var table = $("#rentals").DataTable({
+                ajax: {
+                    url: "/api/rentals/" + @Request.RequestContext.RouteData.Values["id"],
+                    dataSrc: ""
+                },
+                columns: columns
+            });
+
+            $("#rentals").on("click", ".js-return", function () {
+                var button = $(this);
+
+                bootbox.confirm("Return rental?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/rentals/" + button.attr("data-rental-id"),
+                            method: "PUT",
+                            success: function () {
+                                table.row(button.parents("tr")).draw();
+                                //console.log("Success");
+                            }
+                        });
+                    }
+                });
+            });
+            //}
+        });
+    </script>
+}
