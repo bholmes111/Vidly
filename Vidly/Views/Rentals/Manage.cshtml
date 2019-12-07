@@ -88,7 +88,7 @@
                    //puts a button in the last column
                     targets: [-1], render: function (data) {
                         if (!data.dateReturned) {
-                            return "<button class='btn btn-link js-return' data-rental-id=" + data.id + ">Return Rental</button>";
+                            return "<button class='btn btn-link js-return p-0 m-0 border-0' data-rental-id=" + data.id + ">Return Rental</button>";
                         }
                         return "";
                     }
