@@ -110,7 +110,7 @@ namespace Vidly.Controllers.Api
 
         //PUT /api/customers/1
         [HttpPut]
-        public void UpdateRental(int id)
+        public IHttpActionResult UpdateRental(int id)
         {
             if (!ModelState.IsValid)
             {
@@ -127,12 +127,14 @@ namespace Vidly.Controllers.Api
                 throw new HttpResponseException(HttpStatusCode.NotFound);
             }
             if (RentalInDb.DateReturned != null)
-                return;
+                return Ok();
 
             ++RentalInDb.Movie.NumberAvailable;
             RentalInDb.DateReturned = DateTime.Now;
 
             _context.SaveChanges();
+
+            return Ok();
         }
 
         [HttpDelete]

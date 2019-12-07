@@ -44,6 +44,25 @@
 {
     <script>
         $(document).ready(function () {
+            //var columns = [
+            //    {
+            //        data: "movie.name"
+            //    }
+            //    , {
+            //        data: "dateRented"
+            //    }
+            //    , {
+            //        data: "dateReturned"
+            //    }
+            //];
+
+            //columns.push({
+            //    data: "id",
+            //    render: function (data) {
+            //        return "<button class='btn btn-link js-return' data-rental-id=" + data + ">Return Rental</button>";
+            //    }
+            //});
+
             var columns = [
                 {
                     data: "movie.name"
@@ -54,21 +73,26 @@
                 , {
                     data: "dateReturned"
                 }
-            ];
-
-            columns.push({
-                data: "id",
-                render: function (data) {
-                    return "<button class='btn btn-link js-return' data-rental-id=" + data + ">Return Rental</button>";
+                , {
+                    data: null
                 }
-            });
+            ];
 
             var table = $("#rentals").DataTable({
                 ajax: {
                     url: "/api/rentals/" + @Request.RequestContext.RouteData.Values["id"],
                     dataSrc: ""
                 },
-                columns: columns
+                columns: columns,
+                columnDefs: [{
+                   //puts a button in the last column
+                    targets: [-1], render: function (data) {
+                        if (!data.dateReturned) {
+                            return "<button class='btn btn-link js-return' data-rental-id=" + data.id + ">Return Rental</button>";
+                        }
+                        return "";
+                    }
+                }]
             });
 
             $("#rentals").on("click", ".js-return", function () {
@@ -80,7 +104,8 @@
                             url: "/api/rentals/" + button.attr("data-rental-id"),
                             method: "PUT",
                             success: function () {
-                                table.row(button.parents("tr")).draw();
+                                table.ajax.reload();
+                                //table.row(button.parents("tr")).draw();
                                 //console.log("Success");
                             }
                         });
