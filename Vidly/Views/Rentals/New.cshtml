@@ -108,8 +108,8 @@
 
                         validator.resetForm();
                     })
-                    .fail(function () {
-                        toastr.error("Something went wrong");
+                    .fail(function (jqXHR, textStatus, error) {
+                        toastr.error(jqXHR.responseText);
                     });
 
                     return false;

@@ -23,8 +23,10 @@ namespace Vidly.Controllers
             return View();
         }
 
-        public ActionResult Manage(int id)
+        public ActionResult Manage(int? id)
         {
+            if (id == null) return View("Index", "Home");
+
             var customerRentals = _context.Rentals
                 .Include(r => r.Customer)
                 .Include(r => r.Movie)

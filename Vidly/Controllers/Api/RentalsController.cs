@@ -77,6 +77,15 @@ namespace Vidly.Controllers.Api
                 return BadRequest("CustomerId is not valid");
             }
 
+            var rentals = _context.Rentals
+                .Where(r => r.Customer.Id == rentalDto.CustomerId && r.DateReturned == null).ToList();
+
+            var count = rentals.Count();
+            if (count == 5)
+            {
+                return BadRequest("You have reached the maximum of 5 rentals.");
+            }
+
             var movies = _context.Movies.Where(m => rentalDto.MovieIds.Contains(m.Id)).ToList();
 
             if(movies.Count != rentalDto.MovieIds.Count)
@@ -98,13 +107,19 @@ namespace Vidly.Controllers.Api
                     DateRented = DateTime.Now
                 };
 
-                _context.Rentals.Add(rental);
+                if(count < 5)
+                    _context.Rentals.Add(rental);
+                else
+                {
+                    _context.SaveChanges();
+                    return BadRequest("You have reached the maximum of 5 rentals.");
+                }
 
+                count += 1;
                 movie.NumberAvailable -= 1;
             }
 
             _context.SaveChanges();
-
             return Ok();
         }
 
