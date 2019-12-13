@@ -16,10 +16,11 @@ namespace Vidly.Models
         public DateTime? Birthdate { get; set; }
         public bool IsSubscribedToNewsletter { get; set; }
 
+        public bool IsDelinquent { get; set; }
+
         public MembershipType MembershipType { get; set; }
 
         public int MembershipTypeId { get; set; }
-
-        //public virtual Rental Rental { get; set; }
+        
     }
 }

@@ -36,6 +36,7 @@
             <th>Customer</th>
             <th>Membership Type</th>
             <th>Rentals</th>
+            <th>Delinquent</th>
             @if (this.User.IsInRole(RoleName.CanManageCustomers))
             {
                 <th>Delete</th>
@@ -77,6 +78,12 @@
                         return "<a href='/rentals/manage/" + customer.id + "'>Manage Rentals</a>";
                     }
                 }
+                ,{
+                    data: "isDelinquent",
+                    'render': function (data, type, customer) {
+                         return "<input type='checkbox' class='js-isDelinquent' name='isDelinquent' data-customer-id=" + customer.id + (customer.isDelinquent == true ? ' checked="checked"' : '') + ">";
+                     }
+                }
             ];
 
             if (userRoleManageCustomers)
@@ -109,10 +116,28 @@
                                 method: "DELETE",
                                 success: function () {
                                     table.row(button.parents("tr")).remove().draw();
-                                    //button.parents("tr").remove();
-                                    //console.log("Success");
                                 }
                             });
+                        }
+                    });
+                });
+
+                $("#customers").on("click", ".js-isDelinquent", function () {
+                    var cId = $(this).attr("data-customer-id");
+                    
+                    $.ajax({
+                        url: "/api/customers/UpdateCustomerDelinquency/" + cId,
+                        method: "PUT",
+                        success: function (response) {
+                            if (response != 0) {
+                                console.log("delinquency updated successfully");
+                                location.reload();
+                            }
+                        },
+                        error: function (response) {
+                            if (response != 1) {
+                                console.log(response.responseText);
+                            }
                         }
                     });
                 });

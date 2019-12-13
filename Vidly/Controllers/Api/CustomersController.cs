@@ -101,6 +101,28 @@ namespace Vidly.Controllers.Api
             _context.SaveChanges();
         }
 
+        //PUT /api/customers/1
+        [Route("api/customers/UpdateCustomerDelinquency/{id}")]
+        [HttpPut]
+        [Authorize(Roles = RoleName.CanManageCustomers)]
+        public void UpdateCustomerDelinquency(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+
+            var customerInDb = _context.Customers.SingleOrDefault(c => c.Id == id);
+            if (customerInDb == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.BadRequest);
+            }
+
+            customerInDb.IsDelinquent = !customerInDb.IsDelinquent;
+
+            _context.SaveChanges();
+        }
+
         // DELETE /api/customers/1
         [HttpDelete]
         [Authorize(Roles = RoleName.CanManageCustomers)]
